@@ -2,6 +2,8 @@
 
 ***Sakk program***
 
-Egy hagyományos sakk program, amely kezdetben 2 személyes lesz.
-Platform: PC
-Megvalósítás: JAVAFX
+Egy hagyományos sakk program, amely kezdetben 2 személyes lesz.<br>
+Platform: PC<br>
+Megvalósítás: JAVAFX<br>
+
+<ins>Inspired by [Amir Afghani](https://github.com/amir650/BlackWidow-Chess) 
