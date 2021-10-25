@@ -17,8 +17,8 @@ public class Rook extends Piece{
 
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES={-8,-1,1,8};
 
-    Rook(int piecePosition, Alliance pieceAlliance) {
-        super(piecePosition, pieceAlliance);
+    public Rook(final int piecePosition,final Alliance pieceAlliance) {
+        super(PieceType.ROOK,piecePosition,pieceAlliance);
     }
 
     @Override
@@ -58,7 +58,13 @@ public class Rook extends Piece{
 
         return ImmutableList.copyOf(legalMoves);
     }
-    public static boolean isFirstColumnExclusion(final int currentPosition,final int candidateOffset){
+
+    @Override
+    public String toString() {
+        return pieceType.ROOK.toString();
+    }
+
+    public static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset){
         return BoardUtils.FIRST_COLUMN[currentPosition]&&(candidateOffset==-1);
     }
     public static boolean isEighthColumnExclusion(final int currentPosition,final int candidateOffset){
