@@ -20,6 +20,8 @@ public class Board {
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
 
+    private final Player currentPlayer;
+
 
     private Board(Builder builder){
         this.gameBoard=createGameBoard(builder);
@@ -31,6 +33,7 @@ public class Board {
 
         this.whitePlayer = new WhitePlayer(this,whiteStandardLegalMoves,blackStandardLegalMoves);
         this.blackPlayer = new BlackPlayer(this,whiteStandardLegalMoves,blackStandardLegalMoves);
+        this.currentPlayer=null;
     }
 
     @Override
@@ -53,6 +56,10 @@ public class Board {
         return this.blackPlayer;
     }
 
+    public Player currentPlayer(){
+        return this.currentPlayer;
+    }
+
     public Collection<Piece> getBlackPieces(){
         return this.blackPieces;
     }
@@ -63,7 +70,7 @@ public class Board {
     private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
         final List<Move> legalMoves = new ArrayList<>();
         for(final Piece piece: pieces){
-            legalMoves.addAll(piece.calculateLegalMoves(this)); //???
+            legalMoves.addAll(piece.calculateLegalMoves(this));
         }
         return ImmutableList.copyOf(legalMoves);
     }
