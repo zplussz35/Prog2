@@ -7,7 +7,6 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.MajorMove;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,24 +50,27 @@ public class Bishop extends Piece{
                         }
                         break;
                     }
-
                 }
             }
-
         }
-
         return ImmutableList.copyOf(legalMoves);
     }
 
     @Override
-    public String toString() {
-        return pieceType.BISHOP.toString();
+    public Bishop movePiece(final Move move) {
+        return new Bishop(move.getDestinationCoordinate(),move.getMovedPiece().getPieceAlliance());
     }
+
 
     public static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset){
         return BoardUtils.FIRST_COLUMN[currentPosition]&&(candidateOffset==-9||candidateOffset==7);
     }
     public static boolean isEighthColumnExclusion(final int currentPosition,final int candidateOffset){
         return BoardUtils.EIGHTH_COLUMN[currentPosition]&&(candidateOffset==-7||candidateOffset==9);
+    }
+
+    @Override
+    public String toString() {
+        return pieceType.BISHOP.toString();
     }
 }

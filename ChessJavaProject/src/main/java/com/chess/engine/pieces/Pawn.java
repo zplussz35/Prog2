@@ -5,15 +5,12 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import static com.chess.engine.board.Move.*;
 
 public class Pawn extends Piece{
-
     private final static int[] CANDIDATE_MOVE_COORDINATES={8,16,7,9};
 
     public Pawn(final int piecePosition, final Alliance pieceAlliance) {
@@ -21,8 +18,12 @@ public class Pawn extends Piece{
     }
 
     @Override
-    public Collection<Move> calculateLegalMoves(final Board board) {
+    public Pawn movePiece(final Move move) {
+        return new Pawn(move.getDestinationCoordinate(),move.getMovedPiece().getPieceAlliance());
+    }
 
+    @Override
+    public Collection<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
 
         for(final int currentCandidateOffset: CANDIDATE_MOVE_COORDINATES){
@@ -34,7 +35,6 @@ public class Pawn extends Piece{
             if(currentCandidateOffset==8&&!board.getTile(candidateDestinationCoordinate).isTileOccupied()){
                 //TODO more work here
                 legalMoves.add(new MajorMove(board,this,candidateDestinationCoordinate));
-
             }
             else if(currentCandidateOffset==16&&this.isFirstMove&&
                     BoardUtils.SECOND_ROW[this.piecePosition]&&this.getPieceAlliance().isBlack()||
@@ -55,7 +55,6 @@ public class Pawn extends Piece{
                         legalMoves.add(new MajorMove(board,this,candidateDestinationCoordinate));
                     }
                 }
-
             }
             else if(currentCandidateOffset==9&&
                     !((BoardUtils.FIRST_COLUMN[this.piecePosition]&&this.pieceAlliance.isWhite())||
@@ -67,12 +66,8 @@ public class Pawn extends Piece{
                         legalMoves.add(new MajorMove(board,this,candidateDestinationCoordinate));
                     }
                 }
-
             }
         }
-
-
-
         return ImmutableList.copyOf(legalMoves);
     }
 

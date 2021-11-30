@@ -6,20 +6,22 @@ import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
-import org.w3c.dom.stylesheets.LinkStyle;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import static com.chess.engine.board.Move.*;
 
 public class King extends Piece{
 
     private final static int[] CANDIDATE_MOVE_COORDINATES={-9,-8,-7,-1,1,7,8,9};
 
-    public King(int piecePosition, Alliance pieceAlliance) {
+    public King(final int piecePosition, final Alliance pieceAlliance) {
         super(PieceType.KING,piecePosition, pieceAlliance);
+    }
+
+    @Override
+    public King movePiece(final Move move) {
+        return new King(move.getDestinationCoordinate(),move.getMovedPiece().getPieceAlliance());
     }
 
     @Override
@@ -55,11 +57,6 @@ public class King extends Piece{
         return ImmutableList.copyOf(legalMoves);
     }
 
-    @Override
-    public String toString() {
-        return pieceType.KING.toString();
-    }
-
     private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9 || candidateOffset == -1 ||
                 candidateOffset == 7);
@@ -68,5 +65,10 @@ public class King extends Piece{
     private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == -7 || candidateOffset == 1|| candidateOffset == 9);
 
+    }
+
+    @Override
+    public String toString() {
+        return pieceType.KING.toString();
     }
 }
