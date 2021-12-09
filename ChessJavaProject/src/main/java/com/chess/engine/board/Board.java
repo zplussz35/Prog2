@@ -19,10 +19,13 @@ public class Board {
     private final BlackPlayer blackPlayer;
     private final Player currentPlayer;
 
+    private final Pawn enPassantPawn;
+
     private Board(Builder builder){
         this.gameBoard=createGameBoard(builder);
         this.whitePieces=calculateActivePieces(this.gameBoard,Alliance.WHITE);
         this.blackPieces=calculateActivePieces(this.gameBoard,Alliance.BLACK);
+        this.enPassantPawn= builder.enPassantPawn;
         final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
         final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
         this.whitePlayer = new WhitePlayer(this,whiteStandardLegalMoves,blackStandardLegalMoves);
@@ -40,7 +43,9 @@ public class Board {
     public Player currentPlayer(){
         return this.currentPlayer;
     }
-
+    public Pawn getEnPassantPawn(){
+        return this.enPassantPawn;
+    }
     public Collection<Piece> getBlackPieces(){
         return this.blackPieces;
     }
@@ -54,6 +59,130 @@ public class Board {
         return gameBoard.get(tileCoordinate);
 
     }
+    //--------------------------
+    public Board reBuildBoard(int from, int to ,Piece piece) {
+        Piece p = piece;
+        boolean success=false;
+        Builder builder = new Builder();
+        builder.setMoveMaker(currentPlayer().getAlliance());
+        for (Tile tile : gameBoard) {
+            if (tile.getTileCoordinate() == from){
+                if( tile.isTileOccupied()){
+                    if(p.getPieceType() != Piece.PieceType.PAWN){
+                        if(gameBoard.get(to).isTileOccupied()){
+                            if(gameBoard.get(to).getPiece().getPieceAlliance()!=p.getPieceAlliance()){
+                                Piece attackedPiece=gameBoard.get(to).getPiece();
+                                if(p.calculateLegalMoves(this).contains(new Move.MajorAttackMove(this,p,to,attackedPiece))){
+                                    if(p.getPieceAlliance()==this.currentPlayer.getAlliance()){
+                                        builder.setPiece(p.movePiece(new Move.MajorAttackMove(this, p, to,attackedPiece))); //p.movePiece(new Move.MajorAttackMove(this, p, to,attackedPiece))
+                                        success=true;
+                                        break;
+                                    }
+                                    else{
+                                        System.out.println("Dont correct alliance!");
+                                    }
+                                }
+                                else{
+                                    System.out.println("Illegal Move!");
+                                }
+                            }
+                            else{
+                                System.out.println("Cannot attack your own piece!");
+                            }
+                        }
+                        else{
+                            if(p.calculateLegalMoves(this).contains(new Move.MajorMove(this,p,to))){
+                                if(p.getPieceAlliance()==this.currentPlayer.getAlliance()){
+                                    builder.setPiece(p.movePiece(new Move.MajorMove(this, p, to)));
+                                    success=true;
+                                    break;
+                                }
+                                else{
+                                    System.out.println("Dont correct alliance!");
+                                }
+                            }
+                            else{
+                                System.out.println("Illegal Move!");
+                            }
+                        }
+
+                    }
+                    else{
+                        if(gameBoard.get(to).isTileOccupied()){
+                            Piece attackedPiece=gameBoard.get(to).getPiece();
+                            if(p.calculateLegalMoves(this).contains(new Move.PawnAttackMove(this,p,to,attackedPiece))){
+                                if(p.getPieceAlliance()==this.currentPlayer.getAlliance()){
+                                    builder.setPiece(p.movePiece(new Move.PawnAttackMove(this, p, to,attackedPiece)));
+                                    success=true;
+                                    break;
+                                }
+                                else{
+                                    System.out.println("Dont correct alliance!");
+                                }
+
+                            }else{
+                                System.out.println("Illegal Move!");
+                            }
+
+                        }
+                        else{
+                            if(Math.abs(to-from)==16&&((!gameBoard.get(from+8).isTileOccupied()&&currentPlayer().getAlliance()==Alliance.BLACK)||
+                               (!gameBoard.get(from-8).isTileOccupied()&&currentPlayer().getAlliance()==Alliance.WHITE))){
+
+                                if(p.calculateLegalMoves(this).contains(new Move.PawnJump(this,p,to))){
+                                    if(p.getPieceAlliance()==this.currentPlayer.getAlliance()){
+                                        builder.setPiece(p.movePiece(new Move.PawnJump(this, p, to)));
+                                        success=true;
+                                        break;
+                                    }
+                                    else{
+                                        System.out.println("Dont correct alliance!");
+                                    }
+                                }else{
+                                    System.out.println("Illegal Move!");
+                                }
+                            }
+                            else{
+                                if(p.calculateLegalMoves(this).contains(new Move.PawnMove(this,p,to))){
+                                    if(p.getPieceAlliance()==this.currentPlayer.getAlliance()){
+                                        builder.setPiece(p.movePiece(new Move.PawnMove(this, p, to)));
+                                        success=true;
+                                        break;
+                                    }
+                                    else{
+                                        System.out.println("Dont correct alliance!");
+                                    }
+
+                                }else{
+                                    System.out.println("Illegal Move!");
+                                }
+                            }
+                        }
+                    }
+                }
+                else{
+                    System.out.println("This tile is not occupied!");
+                }
+            }
+        }
+        if(success){
+            for (Tile tile : gameBoard) {
+                if (tile.isTileOccupied() && !tile.getPiece().equals(p)) {
+                    builder.setPiece(tile.getPiece());
+                }
+            }
+            builder.setMoveMaker(currentPlayer().getOpponent().getAlliance());
+        }
+        else{
+            for (Tile tile : gameBoard) {
+                if (tile.isTileOccupied()) {
+                    builder.setPiece(tile.getPiece());
+                }
+            }
+        }
+        return builder.build();
+    }
+    //----------------------------------
 
     public static Board createStandardBoard(){
         final Builder builder = new Builder();
@@ -119,6 +248,12 @@ public class Board {
             this.nextMoveMaker=nextMoveMaker;
             return this;
         }
+
+        //---
+        public Alliance getNextMoveMaker(){
+            return nextMoveMaker;
+        }
+        //---
         public Board build(){
             return new Board(this);
         }

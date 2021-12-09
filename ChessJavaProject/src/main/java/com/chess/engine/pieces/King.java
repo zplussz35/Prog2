@@ -16,9 +16,12 @@ public class King extends Piece{
     private final static int[] CANDIDATE_MOVE_COORDINATES={-9,-8,-7,-1,1,7,8,9};
 
     public King(final int piecePosition, final Alliance pieceAlliance) {
-        super(PieceType.KING,piecePosition, pieceAlliance);
+        super(PieceType.KING,piecePosition, pieceAlliance,true);
     }
 
+    public King(final int piecePosition, final Alliance pieceAlliance,final boolean isFirstMove) {
+        super(PieceType.KING,piecePosition, pieceAlliance,isFirstMove);
+    }
     @Override
     public King movePiece(final Move move) {
         return new King(move.getDestinationCoordinate(),move.getMovedPiece().getPieceAlliance());
@@ -48,7 +51,7 @@ public class King extends Piece{
                     final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
 
                     if(this.pieceAlliance!=pieceAlliance){
-                        legalMoves.add(new AttackMove(board,this,candidateDestinationCoordinate,pieceAtDestination));
+                        legalMoves.add(new MajorAttackMove(board,this,candidateDestinationCoordinate,pieceAtDestination));
                     }
                 }
             }
